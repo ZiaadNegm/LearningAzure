@@ -19,7 +19,7 @@ export async function ChatFunction(
     } else {
       context.log("Prompt nogt find in request body");
 
-      return { body: "Recieved your prompt." };
+      return { status: 200, body: "Recieved your prompt." };
     }
   } catch (error) {
     context.error("Error processing request", error);

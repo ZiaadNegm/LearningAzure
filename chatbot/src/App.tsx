@@ -4,7 +4,7 @@ import "./App.css";
 interface TextInputProps {
   currentInput: string;
   setCurrentInput: React.Dispatch<React.SetStateAction<string>>;
-  updateConversation: (promptText: string) => void;
+  updateConversation: (promptText: string, response: string) => void;
 }
 
 interface ConversationEntry {
@@ -14,9 +14,13 @@ interface ConversationEntry {
 
 const addEntryToConversation = (
   promptText: string,
+  response: string,
   setConversation: React.Dispatch<React.SetStateAction<ConversationEntry[]>>
 ) => {
-  const newEntry: ConversationEntry = { prompt: promptText };
+  const newEntry: ConversationEntry = {
+    prompt: promptText,
+    response: response,
+  };
   setConversation((prevConversation) => [...prevConversation, newEntry]);
 };
 
@@ -47,8 +51,8 @@ const ChatWindow = () => {
   const [currentInput, setCurrentInput] = useState("");
   const [conversation, setConversation] = useState<ConversationEntry[]>([]);
 
-  const updateConversation = (promptText: string) => {
-    addEntryToConversation(promptText, setConversation);
+  const updateConversation = (promptText: string, response: string) => {
+    addEntryToConversation(promptText, response, setConversation);
   };
   return (
     <div>
@@ -62,17 +66,42 @@ const ChatWindow = () => {
   );
 };
 
+const sendPrompt = (prompt: string) => {
+  return fetch("http://localhost:7071/api/ChatFunction", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt }),
+  });
+};
+
 const sendInput = async (prompt: string) => {
   try {
-    const res = await(fetch("http://localhost:7071/api/ChatFunction", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt }),
-    }));
-    const body = (await res).json();
-    console.log(body);
+    const res = await sendPrompt(prompt);
+
+    if (!res.ok) {
+      throw new Error(
+        `Response is not ok: HTTP ${res.status}: ${res.statusText}`
+      );
+    }
+
+    // Get response as text first to check if it's empty
+    const rawText = await res.text();
+
+    if (!rawText || rawText.trim() === "") {
+      throw new Error("Server returned empty response");
+    }
+
+    // Parse the text as JSON
+    const filteredResponse = JSON.parse(rawText);
+
+    if (!filteredResponse) {
+      throw new Error("Server returned empty result");
+    }
+
+    return filteredResponse.response;
   } catch (err) {
-    console.error("Fetc Error:", err);
+    console.error("Fetch Error:", err);
+    throw err;
   }
 };
 
@@ -81,12 +110,17 @@ const TextInput = ({
   setCurrentInput,
   updateConversation,
 }: TextInputProps) => {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(currentInput);
-    updateConversation(currentInput);
-    sendInput(currentInput);
-    setCurrentInput("");
+
+    try {
+      const response = await sendInput(currentInput);
+      updateConversation(currentInput, response);
+      setCurrentInput("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
   };
   return (
     <div>
