@@ -62,6 +62,20 @@ const ChatWindow = () => {
   );
 };
 
+const sendInput = async (prompt: string) => {
+  try {
+    const res = await fetch("http://localhost:7071/api/ChatFunction", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
+    });
+    const body = (await res).json();
+    console.log(body);
+  } catch (err) {
+    console.error("Fetc Error:", err);
+  }
+};
+
 const TextInput = ({
   currentInput,
   setCurrentInput,
@@ -71,6 +85,7 @@ const TextInput = ({
     e.preventDefault();
     console.log(currentInput);
     updateConversation(currentInput);
+    sendInput(currentInput);
     setCurrentInput("");
   };
   return (
