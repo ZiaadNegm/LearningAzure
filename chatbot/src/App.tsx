@@ -64,11 +64,11 @@ const ChatWindow = () => {
 
 const sendInput = async (prompt: string) => {
   try {
-    const res = await fetch("http://localhost:7071/api/ChatFunction", {
+    const res = await(fetch("http://localhost:7071/api/ChatFunction", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt }),
-    });
+    }));
     const body = (await res).json();
     console.log(body);
   } catch (err) {
