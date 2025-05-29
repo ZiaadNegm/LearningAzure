@@ -4,28 +4,80 @@ import {
   HttpResponseInit,
   InvocationContext,
 } from "@azure/functions";
+import { OpenAI } from "openai";
+
+interface OpenAIConfiguration {
+  apiKey: string;
+}
+
+const createOpenAIClient = (context: InvocationContext) => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    context.error("No API key found");
+    throw new Error("No api key found");
+  }
+  return new OpenAI({ apiKey });
+};
 
 export async function ChatFunction(
   request: HttpRequest,
   context: InvocationContext
 ): Promise<HttpResponseInit> {
-  context.log(`Http function processed request for url "${request.url}"`);
+  context.log(`Processing request for URL: "${request.url}"`);
+
   try {
-    const requestBody: any = await request.json();
-    const prompt: any = requestBody?.prompt;
+    // Parse request body
+    let requestBody;
+    try {
+      requestBody = await request.json();
+    } catch (parseError) {
+      context.error("Failed to parse JSON:", parseError);
+      return {
+        status: 400,
+        jsonBody: { error: "Invalid JSON format" },
+      };
+    }
 
-    if (prompt) {
-      context.log(`Received prompt: ${prompt}`);
-    } else {
-      context.log("Prompt nogt find in request body");
+    const { prompt } = requestBody as { prompt: string };
 
-      return { status: 200, body: "Recieved your prompt." };
+    if (!prompt?.trim()) {
+      context.log("Empty or missing prompt");
+      return {
+        status: 400,
+        jsonBody: { error: "Prompt is required and cannot be empty" },
+      };
+    }
+
+    context.log(`Received prompt: ${prompt}`);
+
+    try {
+      const openai = createOpenAIClient(context);
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+      });
+
+      const content = response.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error("No response content from OpenAI");
+      }
+
+      return {
+        status: 200,
+        jsonBody: { filteredResponse: content },
+      };
+    } catch (openaiError) {
+      context.error("OpenAI API error:", openaiError);
+      return {
+        status: 500,
+        jsonBody: { error: "Failed to generate response" },
+      };
     }
   } catch (error) {
-    context.error("Error processing request", error);
+    context.error("Unexpected error:", error);
     return {
-      status: 400,
-      body: "Could notparse the request body",
+      status: 500,
+      jsonBody: { error: "Internal server error" },
     };
   }
 }
