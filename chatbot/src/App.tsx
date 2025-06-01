@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 
-const base = import.meta.env.BASE_URL
+const base = import.meta.env.VITE_API_BASE_URL;
 
 interface TextInputProps {
   currentInput: string;
@@ -70,7 +70,7 @@ const ChatWindow = () => {
 };
 
 const sendPrompt = (prompt: string) => {
-  return fetch("http://localhost:7071/api/ChatFunction", {
+  return fetch(base + "/api/ChatFunction", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt }),
