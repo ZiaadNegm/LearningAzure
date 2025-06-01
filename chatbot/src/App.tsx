@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 
+const base = import.meta.env.BASE_URL
+
 interface TextInputProps {
   currentInput: string;
   setCurrentInput: React.Dispatch<React.SetStateAction<string>>;
@@ -138,9 +140,10 @@ const TextInput = ({
       // Update with the actual response
       updateConversation(currentInput, response);
     } catch (error) {
+      if (error instanceof Error) {
+        updateConversation(currentInput, `Error: ${error.message}`);
+      }
       console.error("Failed to send message:", error);
-      // Update with error message so user knows what happened
-      updateConversation(currentInput, `Error: ${error.message}`);
     }
   };
   return (
