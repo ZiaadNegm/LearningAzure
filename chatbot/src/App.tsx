@@ -74,14 +74,14 @@ const ChatWindow = () => {
 };
 
 const sendPrompt = (prompt: string) => {
-  return fetch(`${base}/api/ChatFunction`, {
+  return fetch(`/api/ChatFunction`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt }),
   });
 };
 
-const sendInput = async (prompt: string) => {
+const sendInput = async (prompt: string) => {   
   try {
     const res = await sendPrompt(prompt);
     if (!res.ok) {
