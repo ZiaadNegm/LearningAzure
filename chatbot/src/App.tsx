@@ -3,6 +3,10 @@ import "./App.css";
 
 const base = import.meta.env.VITE_API_BASE_URL;
 
+if (!base) {
+  throw new Error("VITE_API_BASE_URL is not defined.");
+}
+
 interface TextInputProps {
   currentInput: string;
   setCurrentInput: React.Dispatch<React.SetStateAction<string>>;
@@ -70,7 +74,7 @@ const ChatWindow = () => {
 };
 
 const sendPrompt = (prompt: string) => {
-  return fetch(base + "/api/ChatFunction", {
+  return fetch(`${base}/api/ChatFunction`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt }),
