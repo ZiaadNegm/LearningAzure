@@ -25,6 +25,12 @@ export async function ChatFunction(
 ): Promise<HttpResponseInit> {
   context.log(`Processing request for URL: "${request.url}"`);
 
+  const principal = request.headers.get("x-ms-client-principal");
+  if (!principal) {
+    context.log("No x-ms-client-principal found");
+  }
+  context.log(principal);
+
   try {
     // Parse request body
     let requestBody;

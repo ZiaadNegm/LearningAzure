@@ -1,0 +1,23 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/api/*",
+      "/assets/*",
+      "/*.{js,css,png,jpg,jpeg,gif,ico,svg}",
+      "/.auth/*"
+    ]
+  },
+  "routes": [
+    {
+      "route": "/api/*",
+      "allowedRoles": ["authenticated"]
+    }
+ ],
+  "responseOverrides": {
+    "401": {
+      "statusCode": 302,
+      "redirect": "/login?returnUrl=.referrer"
+    }
+  }
+}

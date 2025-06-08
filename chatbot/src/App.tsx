@@ -74,7 +74,7 @@ const ChatWindow = () => {
 };
 
 const sendPrompt = (prompt: string) => {
-  return fetch(`${base}/api/ChatFunction`, {
+  return fetch(`/api/ChatFunction`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt }),
