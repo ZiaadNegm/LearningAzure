@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/ChatFunction.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
