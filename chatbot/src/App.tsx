@@ -81,9 +81,15 @@ const sendPrompt = (prompt: string) => {
   });
 };
 
-const sendInput = async (prompt: string) => {   
+const sendInput = async (prompt: string) => {
   try {
     const res = await sendPrompt(prompt);
+
+    if (res.status == 401 || res.redirected) {
+      window.location.href = "/.auth/login/add";
+      throw new Error("Redirecting to login");
+    }
+
     if (!res.ok) {
       throw new Error(
         `Response is not ok: HTTP ${res.status}: ${res.statusText}`
