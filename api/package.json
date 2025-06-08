@@ -2,12 +2,13 @@
   "name": "",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/functions/*.js",
+  "main": "dist/ChatFunction.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf dist",
     "prestart": "npm run clean && npm run build",
+    "verbose": "func start --verbose",
     "start": "func start",
     "test": "echo \"No tests yet...\""
   },
