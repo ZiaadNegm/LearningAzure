@@ -34,7 +34,7 @@ jobs:
           app_location: "chatbot" # front-end source
           api_location: "api" # Functions source
           output_location: "dist" # built SPA inside /chatbot/dist
-          config_file_location: "./staticwebapp.config.json" # <-- new
+          config_file_location: "." # <-- new
           # ============================
 
         env:
