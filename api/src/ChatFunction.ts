@@ -76,7 +76,13 @@ export async function ChatFunction(
       context.error("OpenAI API error:", openaiError);
       return {
         status: 500,
-        jsonBody: { error: "Failed to generate response" },
+        jsonBody: {
+          error: "Failed to generate response",
+          details:
+            openaiError instanceof Error
+              ? openaiError.message
+              : String(openaiError),
+        },
       };
     }
   } catch (error) {
