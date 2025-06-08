@@ -1,4 +1,7 @@
 {
+  "platform": {
+    "apiRuntime": "node:20"
+  },
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": [
@@ -13,7 +16,7 @@
       "route": "/api/*",
       "allowedRoles": ["anonymous"]
     }
- ],
+  ],
   "responseOverrides": {
     "401": {
       "statusCode": 302,
