@@ -51,7 +51,7 @@ export const ChatWindow = () => {
   };
 
   return (
-    <div>
+    <div className="h-screen flex justify-center items-center">
       <TextInput
         currentInput={currentInput}
         setCurrentInput={setCurrentInput}

@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import ChatWindow from "./App";
+import { ChatWindow } from "./components/ChatWindow";
 import LoginPage from "./loginPage";
 
 const RoutesDefined = () => {
