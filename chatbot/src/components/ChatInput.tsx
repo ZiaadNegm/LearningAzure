@@ -14,9 +14,16 @@ export const sendPrompt = (prompt: string) => {
   });
 };
 
+const startLoginFlow = () => {
+  window.location.assign("/login");
+};
+
 export const sendInput = async (prompt: string) => {
   try {
     const res = await sendPrompt(prompt);
+    if (res.status === 401) {
+      startLoginFlow();
+    }
     if (!res.ok) {
       throw new Error(
         `Response is not ok: HTTP ${res.status}: ${res.statusText}`
