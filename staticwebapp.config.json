@@ -2,16 +2,24 @@
   "platform": {
     "apiRuntime": "node:20"
   },
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/api/*",
+      "/assets/*",
+      "/*.{js,css,png,jpg,jpeg,gif,ico,svg}",
+      "/.auth/*"
+    ]
+  },
   "routes": [
     {
       "route": "/api/*",
-      "allowedRoles": ["anonymous"]
+      "allowedRoles": ["authenticated"]
     }
   ],
   "responseOverrides": {
     "401": {
       "statusCode": 302,
-      "redirect": "/.auth/login/aad"
-    }
+      "redirect": "/login"}
   }
 }
