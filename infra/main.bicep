@@ -88,13 +88,13 @@ resource SWAInsights 'Microsoft.Insights/components@2020-02-02' existing = { nam
 
 resource functionZiaadsOpenAIConnector 'Microsoft.Web/sites@2024-11-01' existing = { name: functionOpenAIConnector }
 
-resource insightsFunctionApp 'Microsoft.Insights/components@2020-02-02' existing = { name: functionOpenAIConnector }
+resource insightsFunctionApp 'Microsoft.Insights/components@2020-02-02' existing = { name: existingSWAInsights }
 
 resource functionAppSettings 'Microsoft.Web/sites/config@2024-11-01' = {
   parent: functionZiaadsOpenAIConnector
   name: 'appsettings'
   properties: {
-    APPLICATION_CONNECTION_STRING: insightsFunctionApp.properties.ConnectionString
+    APPLICATIONINSIGHTS_CONNECTION_STRING: insightsFunctionApp.properties.ConnectionString
   }
 }
 
@@ -104,10 +104,10 @@ resource functionDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
   properties: {
     workspaceId: workspaceResourceID
     logs: [
-      { enabled: true, category: 'FunctionAppLogs', retentionPolicy: { enabled: true, days: 30 } }
+      { enabled: true, category: 'FunctionAppLogs' }
     ]
     metrics: [
-      { enabled: true, category: 'Allmetrics', retentionPolicy: { enabled: true, days: 30 } }
+      { enabled: true, category: 'AllMetrics' }
     ]
   }
 }
@@ -119,7 +119,7 @@ resource cosmosInsights 'Microsoft.Insights/diagnosticSettings@2021-05-01-previe
     workspaceId: workspaceResourceID
     logs: [
       {
-        categoryGroup: 'allLogs'
+        categoryGroup: 'AllLogs'
         enabled: true
       }
     ]
