@@ -28,3 +28,6 @@ resource DatabaseZiaadsChatbot 'Microsoft.DocumentDB/databaseAccounts/sqlDatabas
   name: databaseName
   properties: { resource: { id: databaseName } }
 }
+
+Microsoft.DocumentDB/databaseAccounts/sqlDatabases
+resource ContaineruserMetaData 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2025-05-01-preview' = {}
