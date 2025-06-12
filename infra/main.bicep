@@ -1,6 +1,8 @@
 @description('User meta container containing, user-id, chat-titles (last used)')
 @maxLength(200)
-param containerName string = 'cosmos-container-user-meta-${resourceGroup().name}'
+param metaContainerName string = 'cosmos-container-user-meta-data'
+
+param chatContainerName string = 'cosmos-container-user-meta-data'
 
 param accountName string = 'cosmos-ChatBot-Account'
 
@@ -29,5 +31,45 @@ resource DatabaseZiaadsChatbot 'Microsoft.DocumentDB/databaseAccounts/sqlDatabas
   properties: { resource: { id: databaseName } }
 }
 
-Microsoft.DocumentDB/databaseAccounts/sqlDatabases
-resource ContaineruserMetaData 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2025-05-01-preview' = {}
+resource ContaineruserMetaData 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2025-05-01-preview' = {
+  parent: DatabaseZiaadsChatbot
+  name: metaContainerName
+  properties: {
+    resource: {
+      id: metaContainerName
+      partitionKey: {
+        paths: [
+          '/userid'
+        ]
+        kind: 'Hash'
+      }
+    }
+    options: {
+      throughput: 400
+    }
+  }
+}
+
+resource ContainerChats 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2025-05-01-preview' = {
+  parent: DatabaseZiaadsChatbot
+  name: chatContainerName
+  properties: {
+    resource: {
+      id: chatContainerName
+      partitionKey: {
+        paths: [
+          '/userid'
+        ]
+        kind: 'Hash'
+      }
+      uniqueKeyPolicy: {
+        uniqueKeys: [
+          { paths: ['/conversationID'] }
+        ]
+      }
+    }
+    options: {
+      throughput: 400
+    }
+  }
+}
