@@ -2,7 +2,7 @@
 @maxLength(200)
 param metaContainerName string = 'cosmos-container-user-meta-data'
 
-param chatContainerName string = 'cosmos-container-user-meta-data'
+param chatContainerName string = 'cosmos-container-chats'
 
 param accountName string = 'cosmos-ChatBot-Account'
 
@@ -14,6 +14,8 @@ param existingSWAInsights string = 'ZiaadsChatbot'
 
 @description('Location for the Cosmos DB Account')
 param location string = resourceGroup().location
+
+var workspaceResourceID = SWAInsights.properties.WorkspaceResourceId
 
 resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2025-05-01-preview' = {
   name: toLower(accountName)
@@ -84,7 +86,7 @@ resource cosmosInsights 'Microsoft.Insights/diagnosticSettings@2021-05-01-previe
   scope: cosmosAccount
   name: cosmosInsightSetting
   properties: {
-    workspaceId: SWAInsights.properties.WorkspaceResourceId
+    workspaceId: workspaceResourceID
     logs: [
       {
         categoryGroup: 'allLogs'
