@@ -8,6 +8,10 @@ param accountName string = 'cosmos-ChatBot-Account'
 
 param databaseName string = 'Database-ziaadsChatbot'
 
+param cosmosInsightSetting string = 'Cosmos-Insight-ChatBot'
+
+param existingSWAInsights string = 'ZiaadsChatbot'
+
 @description('Location for the Cosmos DB Account')
 param location string = resourceGroup().location
 
@@ -71,5 +75,24 @@ resource ContainerChats 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/cont
     options: {
       throughput: 400
     }
+  }
+}
+
+resource SWAInsights 'Microsoft.Insights/components@2020-02-02' existing = { name: existingSWAInsights }
+
+resource cosmosInsights 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: cosmosAccount
+  name: cosmosInsightSetting
+  properties: {
+    workspaceId: SWAInsights.properties.WorkspaceResourceId
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+      }
+    ]
+    metrics: [
+      { category: 'AllMetrics', enabled: true }
+    ]
   }
 }
