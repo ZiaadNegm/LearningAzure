@@ -1,4 +1,5 @@
 import React from "react";
+import { useAuth } from "../context/auth";
 
 export interface TextInputProps {
   currentInput: string;
@@ -11,19 +12,13 @@ export const sendPrompt = (prompt: string) => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt }),
+    credentials: "include",
   });
-};
-
-const startLoginFlow = () => {
-  window.location.assign("/login");
 };
 
 export const sendInput = async (prompt: string) => {
   try {
     const res = await sendPrompt(prompt);
-    if (res.status === 401) {
-      startLoginFlow();
-    }
     if (!res.ok) {
       throw new Error(
         `Response is not ok: HTTP ${res.status}: ${res.statusText}`
@@ -66,23 +61,53 @@ export const sendInput = async (prompt: string) => {
   }
 };
 
+const showLoadingMenu = () => {
+  return <div>Loading...</div>;
+};
+
 export const TextInput = ({
   currentInput,
   setCurrentInput,
   updateConversation,
 }: TextInputProps) => {
+  const { user, isAuthenticated, loading, login } = useAuth();
+
+  if (loading) {
+    return showLoadingMenu();
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="p-4 text-center">
+        <p>Please log in to send messages</p>
+        <button
+          onClick={login}
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Log In
+        </button>
+      </div>
+    );
+  } else {
+    console.log(`User has authenticated with the following data`, user?.oid);
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("submitting", currentInput);
-    setCurrentInput("");
 
+    if (!currentInput.trim()) return;
+
+    const inputToSend = currentInput;
+    setCurrentInput("");
     try {
       console.log("About to call sendInput");
-      const response = await sendInput(currentInput);
+
+      const response = await sendInput(inputToSend);
       console.log("sendInput returned:", response);
 
       // Update with the actual response
-      updateConversation(currentInput, response);
+      updateConversation(inputToSend, response);
     } catch (error) {
       if (error instanceof Error) {
         updateConversation(currentInput, `Error: ${error.message}`);
