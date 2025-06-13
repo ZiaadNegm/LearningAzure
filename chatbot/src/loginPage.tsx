@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router";
 import { useEffect } from "react";
 
-const LoginPage = () => {
+export const LoginPage = () => {
   const [searchParams] = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") || "/";
 
@@ -14,4 +14,13 @@ const LoginPage = () => {
   return <div>Redirecting to Microsoft Entra ID...</div>;
 };
 
-export default LoginPage;
+export const LogoutPage = () => {
+  const [searchParams] = useSearchParams();
+  const returnUrl = searchParams.get("returnUrl") || "/";
+
+  useEffect(() => {
+    window.location.href = "/.auth/logout";
+  }, [returnUrl]);
+  console.log("Logout page triggered");
+  return <div>Loggin off</div>;
+};

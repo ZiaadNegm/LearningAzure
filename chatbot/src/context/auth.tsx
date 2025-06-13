@@ -73,13 +73,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = () => {
-    window.location.href =
-      "/.auth/login/aad?returnUrl=" +
-      encodeURIComponent(window.location.pathname);
+    window.location.href = "/login"
   };
 
   const logout = () => {
-    window.location.href = "/.auth/logout";
+  window.location.href = "/logout"
   };
 
   // Check auth on mount
