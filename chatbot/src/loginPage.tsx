@@ -22,5 +22,5 @@ export const LogoutPage = () => {
     window.location.href = "/.auth/logout";
   }, [returnUrl]);
   console.log("Logout page triggered");
-  return <div>Loggin off</div>;
+  return <div>Logging off</div>;
 };
