@@ -10,3 +10,4 @@ This directory is setup with the goal of learning Azure.
 
 ## Todo:
 * Implement a dummy function to retrieve data from cosmosDB based upon the retrieved oid
+* Restructure Chatinput.tsx as this violates the single responsibilty rule.
