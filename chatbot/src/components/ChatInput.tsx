@@ -1,93 +1,21 @@
 import React from "react";
 import { useAuth } from "../context/auth";
-
-interface userMetaData {
-  oid: string;
-  userDetails?: string;
-  identityProvider?: string;
-}
-
-export interface TextInputProps {
-  currentInput: string;
-  setCurrentInput: React.Dispatch<React.SetStateAction<string>>;
-  updateConversation: (promptText: string, response: string) => void;
-}
-
-export const sendPrompt = (prompt: string) => {
-  return fetch(`/api/ChatFunction`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt }),
-    credentials: "include",
-  });
-};
-
-export const sendInput = async (prompt: string) => {
-  try {
-    const res = await sendPrompt(prompt);
-    if (!res.ok) {
-      throw new Error(
-        `Response is not ok: HTTP ${res.status}: ${res.statusText}`
-      );
-    }
-    // Get the raw response text first
-    const rawText = await res.text();
-    // Check if it's empty
-    if (!rawText || rawText.trim() === "") {
-      throw new Error("Server returned empty response");
-    }
-
-    // Try to parse as JSON
-    let responseData;
-    try {
-      responseData = JSON.parse(rawText);
-    } catch (parseError) {
-      console.error("JSON parse error:", parseError);
-      console.error("Raw text that failed to parse:", rawText);
-      throw new Error(
-        `Failed to parse response as JSON: ${
-          parseError instanceof Error ? parseError.message : String(parseError)
-        }`
-      );
-    }
-
-    console.log("Parsed response data:", responseData);
-
-    const { filteredResponse } = responseData;
-    console.log("Extracted filteredResponse:", filteredResponse);
-
-    if (!filteredResponse) {
-      throw new Error("Server returned empty result");
-    }
-
-    return filteredResponse;
-  } catch (err) {
-    console.error("Fetch Error:", err);
-    throw err;
-  }
-};
+import { sendInput } from "../apiFunctions/promptAPI";
+import type {
+  TextInputProps,
+  UseChatSubmitProps,
+  UserMetaData,
+  InputFormProps,
+} from "../types/chat";
 
 const showLoadingMenu = () => {
   return <div>Loading...</div>;
 };
 
-/* Text input:
- * authenticates
- * Loads login div
- * contains the handleSubmit which triggers sendInput
- * Renders the TextInput
- */
-
-/* Higer up function
- * Calls auth function -> loads login div.
- * HandleSubmit ->-> Validate input +  reset state -> call sendInput -> updateConversation
- */
-
-// Provided a login button which calls the Login provided by the useAuth context.
-const AuthenticateGate = (
+const authenticateGate = (
   login: () => void,
-  isAuthenticated: boolean,
-  user: userMetaData | null
+  isAuthenticated: Boolean,
+  user: UserMetaData | null
 ) => {
   if (!isAuthenticated) {
     return (
@@ -110,11 +38,7 @@ const InputForm = ({
   currentInput,
   setCurrentInput,
   handleSubmit,
-}: {
-  currentInput: string;
-  setCurrentInput: React.Dispatch<React.SetStateAction<string>>;
-  handleSubmit: (input: string) => Promise<void>;
-}) => {
+}: InputFormProps) => {
   const finalizeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!currentInput.trim()) return;
@@ -140,13 +64,18 @@ const InputForm = ({
   );
 };
 
-const useMessageSubmission = (
-  updateConversation: (prompt: string, response: string) => void
-) => {
-  return async (inputToSend: string) => {
+const useChatSubmit = ({
+  updateConversation,
+  onInputClear,
+}: UseChatSubmitProps) => {
+  const handleSubmit = async (inputToSend: string) => {
     try {
+      console.log("About to call sendInput");
       const response = await sendInput(inputToSend);
+      console.log("sendInput returned:", response);
       updateConversation(inputToSend, response);
+
+      onInputClear?.();
     } catch (error) {
       if (error instanceof Error) {
         updateConversation(inputToSend, `Error: ${error.message}`);
@@ -154,6 +83,8 @@ const useMessageSubmission = (
       console.error("Failed to send message:", error);
     }
   };
+
+  return { handleSubmit };
 };
 
 export const TextInput = ({
@@ -162,21 +93,26 @@ export const TextInput = ({
   updateConversation,
 }: TextInputProps) => {
   const { user, isAuthenticated, loading, login } = useAuth();
-  const submitMessage = useMessageSubmission(updateConversation);
+
+  const { handleSubmit } = useChatSubmit({
+    updateConversation,
+    onInputClear: () => setCurrentInput(""),
+  });
 
   if (loading) {
     return showLoadingMenu();
   }
 
-  if (!isAuthenticated) {
-    return <AuthenticateGate login={login} />;
+  const authGate = authenticateGate(login, isAuthenticated, user);
+  if (authGate) {
+    return authGate;
   }
 
   return (
     <InputForm
       currentInput={currentInput}
       setCurrentInput={setCurrentInput}
-      handleSubmit={submitMessage} // Pass the submission handler down
+      handleSubmit={handleSubmit}
     />
   );
 };
