@@ -84,9 +84,9 @@ const showLoadingMenu = () => {
  */
 
 // Provided a login button which calls the Login provided by the useAuth context.
-const authenticateGate = (
+const AuthenticateGate = (
   login: () => void,
-  isAuthenticated: Boolean,
+  isAuthenticated: boolean,
   user: userMetaData | null
 ) => {
   if (!isAuthenticated) {
@@ -106,46 +106,26 @@ const authenticateGate = (
   }
 };
 
-export const TextInput = ({
+const InputForm = ({
   currentInput,
   setCurrentInput,
-  updateConversation,
-}: TextInputProps) => {
-  const { user, isAuthenticated, loading, login } = useAuth();
-
-  if (loading) {
-    return showLoadingMenu();
-  }
-
-  authenticateGate(login, isAuthenticated, user);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  handleSubmit,
+}: {
+  currentInput: string;
+  setCurrentInput: React.Dispatch<React.SetStateAction<string>>;
+  handleSubmit: (input: string) => Promise<void>;
+}) => {
+  const finalizeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submitting", currentInput);
-
     if (!currentInput.trim()) return;
-
-    const inputToSend = currentInput;
+    const inputTosend = currentInput;
     setCurrentInput("");
-    try {
-      console.log("About to call sendInput");
-
-      const response = await sendInput(inputToSend);
-      console.log("sendInput returned:", response);
-
-      // Update with the actual response
-      updateConversation(inputToSend, response);
-    } catch (error) {
-      if (error instanceof Error) {
-        updateConversation(currentInput, `Error: ${error.message}`);
-      }
-      console.error("Failed to send message:", error);
-    }
+    await handleSubmit(inputTosend);
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={finalizeSubmit}>
         <input
           type="text"
           className="rounded-2xl border-black border"
@@ -157,5 +137,46 @@ export const TextInput = ({
         />
       </form>
     </div>
+  );
+};
+
+const useMessageSubmission = (
+  updateConversation: (prompt: string, response: string) => void
+) => {
+  return async (inputToSend: string) => {
+    try {
+      const response = await sendInput(inputToSend);
+      updateConversation(inputToSend, response);
+    } catch (error) {
+      if (error instanceof Error) {
+        updateConversation(inputToSend, `Error: ${error.message}`);
+      }
+      console.error("Failed to send message:", error);
+    }
+  };
+};
+
+export const TextInput = ({
+  currentInput,
+  setCurrentInput,
+  updateConversation,
+}: TextInputProps) => {
+  const { user, isAuthenticated, loading, login } = useAuth();
+  const submitMessage = useMessageSubmission(updateConversation);
+
+  if (loading) {
+    return showLoadingMenu();
+  }
+
+  if (!isAuthenticated) {
+    return <AuthenticateGate login={login} />;
+  }
+
+  return (
+    <InputForm
+      currentInput={currentInput}
+      setCurrentInput={setCurrentInput}
+      handleSubmit={submitMessage} // Pass the submission handler down
+    />
   );
 };
