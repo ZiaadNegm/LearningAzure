@@ -1,6 +1,12 @@
 import React from "react";
 import { useAuth } from "../context/auth";
 
+interface userMetaData {
+  oid: string;
+  userDetails?: string;
+  identityProvider?: string;
+}
+
 export interface TextInputProps {
   currentInput: string;
   setCurrentInput: React.Dispatch<React.SetStateAction<string>>;
@@ -65,17 +71,24 @@ const showLoadingMenu = () => {
   return <div>Loading...</div>;
 };
 
-export const TextInput = ({
-  currentInput,
-  setCurrentInput,
-  updateConversation,
-}: TextInputProps) => {
-  const { user, isAuthenticated, loading, login } = useAuth();
+/* Text input:
+ * authenticates
+ * Loads login div
+ * contains the handleSubmit which triggers sendInput
+ * Renders the TextInput
+ */
 
-  if (loading) {
-    return showLoadingMenu();
-  }
+/* Higer up function
+ * Calls auth function -> loads login div.
+ * HandleSubmit ->-> Validate input +  reset state -> call sendInput -> updateConversation
+ */
 
+// Provided a login button which calls the Login provided by the useAuth context.
+const authenticateGate = (
+  login: () => void,
+  isAuthenticated: Boolean,
+  user: userMetaData | null
+) => {
   if (!isAuthenticated) {
     return (
       <div className="p-4 text-center">
@@ -89,8 +102,22 @@ export const TextInput = ({
       </div>
     );
   } else {
-    console.log(`User has authenticated with the following data`, user?.oid);
+    console.log("User has logged in with the following oid", user?.oid);
   }
+};
+
+export const TextInput = ({
+  currentInput,
+  setCurrentInput,
+  updateConversation,
+}: TextInputProps) => {
+  const { user, isAuthenticated, loading, login } = useAuth();
+
+  if (loading) {
+    return showLoadingMenu();
+  }
+
+  authenticateGate(login, isAuthenticated, user);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
