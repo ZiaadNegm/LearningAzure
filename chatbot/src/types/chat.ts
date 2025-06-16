@@ -20,3 +20,6 @@ export interface InputFormProps {
   setCurrentInput: React.Dispatch<React.SetStateAction<string>>;
   handleSubmit: (input: string) => Promise<void>;
 }
+export interface ChatApiResponse {
+  filteredResponse: string;
+}
