@@ -12,6 +12,8 @@ param cosmosInsightSetting string = 'Cosmos-Insight-ChatBot'
 
 param existingSWAInsights string = 'ZiaadsChatbot'
 
+param principalIDFunctionApp string = '76b1cef3-f3e7-4709-b211-a71859bb90bf'
+
 @description('Location for the Cosmos DB Account')
 param location string = resourceGroup().location
 
@@ -86,7 +88,9 @@ resource ContainerChats 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/cont
 
 resource SWAInsights 'Microsoft.Insights/components@2020-02-02' existing = { name: existingSWAInsights }
 
-resource functionZiaadsOpenAIConnector 'Microsoft.Web/sites@2024-11-01' existing = { name: functionOpenAIConnector }
+resource functionZiaadsOpenAIConnector 'Microsoft.Web/sites@2024-11-01' existing = {
+  name: functionOpenAIConnector
+}
 
 resource insightsFunctionApp 'Microsoft.Insights/components@2020-02-02' existing = { name: existingSWAInsights }
 
@@ -126,5 +130,15 @@ resource cosmosInsights 'Microsoft.Insights/diagnosticSettings@2021-05-01-previe
     metrics: [
       { category: 'AllMetrics', enabled: true }
     ]
+  }
+}
+
+resource readRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2025-05-01-preview' = {
+  parent: cosmosAccount
+  name: 'WriteOnlyRole'
+  properties: {
+    principalId: principalIDFunctionApp
+    roleDefinitionId: '${cosmosAccount.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000001'
+    scope: '${cosmosAccount.id}/dbs/${databaseName}/colls/${metaContainerName}'
   }
 }
