@@ -12,7 +12,7 @@ const showLoadingMenu = () => {
   return <div>Loading...</div>;
 };
 
-const authenticateGate = (
+export const authenticateGate = (
   login: () => void,
   isAuthenticated: Boolean,
   user: UserMetaData | null

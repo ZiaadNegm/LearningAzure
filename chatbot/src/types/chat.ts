@@ -23,3 +23,8 @@ export interface InputFormProps {
 export interface ChatApiResponse {
   filteredResponse: string;
 }
+
+export interface GETUserData {
+  oid: string;
+  metaData?: string[];
+}

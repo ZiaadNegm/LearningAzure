@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { TextInput } from "./ChatInput";
-
+import { TextInput } from "../ChatInput";
 export interface ConversationEntry {
   prompt: string;
   response?: string;
