@@ -23,6 +23,11 @@ param functionOpenAIConnector string = 'ZiaadsOpenAIConnector'
 
 param functionPlatformInsights string = 'PlatformInsightsZiaadsOpenAIConnector'
 
+@description('The resource name')
+var name string = guid(cosmosAccount.id, principalIDFunctionApp, roleDefResourceID)
+
+var roleDefResourceID string = '${cosmosAccount.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002'
+
 resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2025-05-01-preview' = {
   name: toLower(accountName)
   location: location
@@ -92,13 +97,11 @@ resource functionZiaadsOpenAIConnector 'Microsoft.Web/sites@2024-11-01' existing
   name: functionOpenAIConnector
 }
 
-resource insightsFunctionApp 'Microsoft.Insights/components@2020-02-02' existing = { name: existingSWAInsights }
-
 resource functionAppSettings 'Microsoft.Web/sites/config@2024-11-01' = {
   parent: functionZiaadsOpenAIConnector
   name: 'appsettings'
   properties: {
-    APPLICATIONINSIGHTS_CONNECTION_STRING: insightsFunctionApp.properties.ConnectionString
+    APPLICATIONINSIGHTS_CONNECTION_STRING: SWAInsights.properties.ConnectionString
   }
 }
 
@@ -135,10 +138,10 @@ resource cosmosInsights 'Microsoft.Insights/diagnosticSettings@2021-05-01-previe
 
 resource readRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2025-05-01-preview' = {
   parent: cosmosAccount
-  name: 'WriteOnlyRole'
+  name: name
   properties: {
     principalId: principalIDFunctionApp
-    roleDefinitionId: '${cosmosAccount.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000001'
-    scope: '${cosmosAccount.id}/dbs/${databaseName}/colls/${metaContainerName}'
+    roleDefinitionId: roleDefResourceID
+    scope: '${cosmosAccount.id}/dbs/${databaseName}' // Grant access to entire database
   }
 }
