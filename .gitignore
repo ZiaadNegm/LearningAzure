@@ -1,0 +1,109 @@
+# Dependencies - Node.js
+node_modules/
+*/node_modules/
+**/node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+*/dist/
+**/dist/
+build/
+*/build/
+**/build/
+*.dist
+dist-ssr
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment files
+.env
+.env.*
+*.local
+.secrets
+/secrets
+/data
+
+# Azure Functions specific
+bin
+obj
+csx
+.vs
+edge
+Publish
+*.user
+*.suo
+*.cscfg
+*.Cache
+project.lock.json
+/packages
+/TestResults
+/tools/NuGet.exe
+/App_Data
+appsettings.json
+local.settings.json
+
+# Python
+.python_packages/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+Thumbs.db
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+.temp/
+
+# Azure specific
+.azure/
+*.publish.xml
+*.publishproj
+PublishScripts/
+
+# Bicep compiled files
+*.json
+!package.json
+!package-lock.json
+!staticwebapp.config.json
+!tsconfig*.json
+!local.settings.json.example
