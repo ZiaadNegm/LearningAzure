@@ -5,20 +5,47 @@ import {
   input,
   InvocationContext,
 } from "@azure/functions";
+import { Metadata } from "openai/resources/shared";
 
 const cosmosInput = input.cosmosDB({
-    databaseName: '',
-    collectionName '',
-    id: '',
-    partitionKey:''
-     // Connectionstring?
-})
+  connection: "CosmosDBConnection",
+  databaseName: "Database-ziaadsChatbot",
+  containerName: "cosmos-container-user-meta-data",
+  sqlQuery: "SELECT * from c WHERE c.userid = {query.userid}",
+});
 
-export async function userMetaDataHandler(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit>{
-
+interface metaDataStructure {
+  id: string;
+  userid: string;
+  metadata: string[];
 }
 
-app.http('DBuserMetaData',
-{methods:['GET', 'POST'],}
+export async function userMetaData(
+  request: HttpRequest,
+  context: InvocationContext
+): Promise<HttpResponseInit> {
+  const items = context.extraInputs.get(cosmosInput) as metaDataStructure[];
+  if (!items || items.length === 0) {
+    return {
+      status: 404,
+      body: "ToDo item not found",
+    };
+  } else {
+    const lines: string[] = [];
+    items.forEach((items) => {
+      const metaLine = items.metadata.join(",");
+      lines.push(`User ${items.userid} metadata: ${metaLine}`);
+    });
 
- )
+    return {
+      body: `Found ${items.length} record(s): ${lines.join("\n")}`,
+    };
+  }
+}
+
+app.http("userMetaData", {
+  methods: ["GET", "POST"],
+  authLevel: "anonymous",
+  extraInputs: [cosmosInput],
+  handler: userMetaData,
+});

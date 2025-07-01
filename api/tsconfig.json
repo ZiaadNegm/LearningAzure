@@ -5,6 +5,10 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "sourceMap": true,
-    "strict": false
-  }
+    "strict": false,
+    "moduleResolution": "node",
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types", "node_modules/@azure/functions/types"]
+  },
+  "exclude": ["node_modules/@azure/functions/types/cosmosDB.v3.d.ts"]
 }
