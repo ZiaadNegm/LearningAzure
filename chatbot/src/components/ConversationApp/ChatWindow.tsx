@@ -52,14 +52,14 @@ export const ChatWindow = () => {
 
   return (
     <div className="h-screen flex">
-      <div className="w-1/3 min-w-80 border-r border-gray-200 bg-gray-50">
+      <div className="w-1/6 min-w-80 border-r border-gray-200 bg-gray-50">
         <div className="p-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-800">Recent Chats</h2>
         </div>
         <RecentChats />
       </div>
 
-      <div className="w-2/3 flex justify-center items-center">
+      <div className="w-5/6 flex justify-center items-center">
         <TextInput
           currentInput={currentInput}
           setCurrentInput={setCurrentInput}
