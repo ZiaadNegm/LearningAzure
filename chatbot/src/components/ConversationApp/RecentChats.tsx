@@ -26,22 +26,36 @@ export const RecentChats = () => {
     string[] | undefined
   >();
   const { user, isAuthenticated, loading, login } = useAuth();
+
+  // Move useEffect to the top, before any conditional returns
+  useEffect(() => {
+    // Only fetch if user exists and has oid
+    if (user?.oid) {
+      (async () => {
+        try {
+          const listRecentChats = await fetchRecentChats(user.oid);
+          setListRecentChats(listRecentChats);
+        } catch (error) {
+          console.error("Failed to fetch recent chats:", error);
+          setListRecentChats([]); // Set empty array on error
+        }
+      })();
+    }
+  }, [user?.oid]);
+
+  // Now handle conditional renders after all hooks
   if (loading) {
     return <div>Loading..</div>;
   }
+
   const AuthGate = authenticateGate(login, isAuthenticated, user);
   if (AuthGate) {
     return AuthGate;
   }
+
   if (!user?.oid) {
     return <div>error</div>;
   }
-  useEffect(() => {
-    (async () => {
-      const listRecentChats = await fetchRecentChats(user?.oid);
-      setListRecentChats(listRecentChats);
-    })();
-  }, [user?.oid]);
 
   return ShowTable(listRecentChats);
 };
