@@ -25,20 +25,38 @@ export async function userMetaData(
   context: InvocationContext
 ): Promise<HttpResponseInit> {
   const items = context.extraInputs.get(cosmosInput) as metaDataStructure[];
+
+  // Get userid from query parameters
+  const url = new URL(request.url);
+  const userid = url.searchParams.get("userid");
+
   if (!items || items.length === 0) {
     return {
       status: 404,
-      body: "ToDo item not found",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        oid: userid || "",
+        metaData: [],
+      }),
     };
   } else {
-    const lines: string[] = [];
-    items.forEach((items) => {
-      const metaLine = items.metadata.join(",");
-      lines.push(`User ${items.userid} metadata: ${metaLine}`);
+    // Extract all metadata arrays and flatten them
+    const allMetadata: string[] = [];
+    items.forEach((item) => {
+      allMetadata.push(...item.metadata);
     });
 
     return {
-      body: `Found ${items.length} record(s): ${lines.join("\n")}`,
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        oid: userid || "",
+        metaData: allMetadata,
+      }),
     };
   }
 }
