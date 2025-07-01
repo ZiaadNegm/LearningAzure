@@ -11,7 +11,7 @@ const cosmosInput = input.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
   containerName: "cosmos-container-user-meta-data",
-  sqlQuery: "SELECT * from c WHERE c.userid = {query.userid}",
+  sqlQuery: "SELECT * from c WHERE c.userid = {params.userid}",
 });
 
 interface metaDataStructure {
