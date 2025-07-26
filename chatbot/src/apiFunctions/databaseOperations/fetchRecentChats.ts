@@ -11,7 +11,8 @@ const fetchRawResponse = async (oid: string) => {
 const validateAndExtract = async (rawResponse: Response) => {
   if (!rawResponse.ok) {
     throw new Error(
-      `RawResponse is not ok HTTP ${rawResponse.status} : ${rawResponse.statusText}`
+      `Fetch request to ${rawResponse.url} went wrong\n
+      RawResponse is not ok HTTP ${rawResponse.status} : ${rawResponse.statusText}`
     );
   }
   const rawText = await rawResponse.text(); // Ensure data arrives
