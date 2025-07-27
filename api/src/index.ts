@@ -11,7 +11,7 @@ app.http("userMetaData", {
 });
 
 app.http("ChatFunction", {
-  methods: ["POST"],
+  methods: ["POST"],    
   authLevel: "anonymous",
   handler: ChatFunction,
 });
