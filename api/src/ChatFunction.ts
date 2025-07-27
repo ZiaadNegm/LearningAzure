@@ -127,9 +127,3 @@ export async function ChatFunction(
     return createErrorResponse(500, "Internal server error");
   }
 }
-
-app.http("ChatFunction", {
-  methods: ["POST"],
-  authLevel: "anonymous",
-  handler: ChatFunction,
-});

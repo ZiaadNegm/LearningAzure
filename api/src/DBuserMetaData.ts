@@ -1,5 +1,4 @@
 import {
-  app,
   HttpRequest,
   HttpResponseInit,
   input,
@@ -7,7 +6,7 @@ import {
 } from "@azure/functions";
 import { Metadata } from "openai/resources/shared";
 
-const cosmosInput = input.cosmosDB({
+export const cosmosInput = input.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
   containerName: "cosmos-container-user-meta-data",
@@ -60,10 +59,3 @@ export async function userMetaData(
     };
   }
 }
-
-app.http("userMetaData", {
-  methods: ["GET", "POST"],
-  authLevel: "anonymous",
-  extraInputs: [cosmosInput],
-  handler: userMetaData,
-});
