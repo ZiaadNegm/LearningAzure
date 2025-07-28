@@ -9,8 +9,8 @@ import { Metadata } from "openai/resources/shared";
 export const cosmosInput = input.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
-  containerName:
-    "cosmos-container-user-meta- c WHERE c.userid = {Query.userid}",
+  containerName: "cosmos-container-user-meta-data",
+  partitionKey: "{Query.userid}",
 });
 
 interface metaDataStructure {

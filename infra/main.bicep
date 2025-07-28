@@ -142,6 +142,6 @@ resource readRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssign
   properties: {
     principalId: principalIDFunctionApp
     roleDefinitionId: roleDefResourceID
-    scope: '${cosmosAccount.id}/dbs/${databaseName}' // Grant access to entire database
+    scope: cosmosAccount.id
   }
 }
