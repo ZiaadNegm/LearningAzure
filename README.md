@@ -6,8 +6,12 @@ This directory is setup with the goal of learning Azure.
 
 ## Done las time:
 * Implemented proepr authentication in such a way so that the frontend has access to the ms-principal. (verified)
-* Setup IaC for cosmosDB
+* Setup IaC for cosmosDB (verified)
 
 ## Todo:
 * Implement a dummy function to retrieve data from cosmosDB based upon the retrieved oid
 * Restructure Chatinput.tsx as this violates the single responsibilty rule.
+* Clean up dummy resources.
+* Ensure Application Insights is setup correctly by hands on testing.
+* Note the steps from A - Z to setup the Database + Function under SWA connection again.
+* Functionapp is irrelevant but the principalID is linked for a RBAC, how does this make sense?
