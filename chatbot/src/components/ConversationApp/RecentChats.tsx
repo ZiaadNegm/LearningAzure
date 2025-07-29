@@ -15,7 +15,12 @@ const ShowTable = (listRecentChats: string[] | undefined) => {
   return (
     <div>
       {listRecentChats.map((chat, index) => (
-        <div key={index}>{chat}</div>
+        <div
+          key={index}
+          className="bg-black text-white px-4 py-3 my-2 rounded-full cursor-pointer transition-colors duration-200 hover:bg-gray-700"
+        >
+          {chat}
+        </div>
       ))}
     </div>
   );
