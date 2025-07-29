@@ -14,10 +14,10 @@ This directory is setup with the goal of learning Azure.
 * Implement a dummy function to retrieve data from cosmosDB based upon the retrieved oid
 * Ease local testing by making a Warp Workflow.
 * Note the steps from A - Z to setup the Database + Function under SWA connection again.
+* Make GUI for recent chats look okay.
 
 ## Todo:
 * Find out more about loggin in my host.json
 * Find out why we first see Error for 5 seconds before we see the recent chats.
-* Make GUI for recent chats look okay.
 * Think about when we insert a record in RecentChats.
 * Have we defined a record of a chat?
