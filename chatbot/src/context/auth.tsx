@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
 
 interface userMetaData {
   oid: string;
@@ -28,6 +34,52 @@ const parseAndRetrieveOID = (userMetaDataResponse: any): string => {
   );
 };
 
+const checkIsUserInDB = async (oid: string) => {
+  const userMetaDataUrl = `/api/userMetaData?useridExists=${encodeURIComponent(oid)}`;
+  const responseMetaData = await fetch(userMetaDataUrl, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+    credentials: "include",
+  });
+  if(responseMetaData.ok){
+    return true;
+  } else{
+    return false;
+  }
+};
+
+const putUserInDB = async (oid:string) => {
+  const userMetaDataUrl = `/api/userMetaData?useridExists=${encodeURIComponent(oid)}`;
+  const putRequest = fetch(userMetaDataUrl, {
+    method: "POST", 
+    body: JSON.stringify({oid: `${oid}`}),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include"
+  });
+  try{
+    const putRequestSend = await putRequest;
+    if(!putRequestSend.ok){
+      throw new Error(`Can't put user into db with oid ${oid}`);
+    }
+  } catch(error){
+    console.error('Error when putting in a new user in the DB:', error);
+    throw new Error("Cannot insert user into the DB");
+  }
+}
+
+const OIDinDatabase = async (oid: string) => {
+  const isUserInDB: boolean = await checkIsUserInDB(oid);
+  if (!isUserInDB) {
+    try{
+      await putUserInDB(oid);
+    } catch(error) {
+      throw new Error(`Having issues inserting user into the DB with the oid ${oid}`);
+    }
+  }
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<userMetaData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,6 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               userDetails: data.clientPrincipal.userDetails,
               identityProvider: data.clientPrincipal.identityProvider,
             });
+            OIDinDatabase(oid);
           } else {
             setUser(null);
             console.warn("No OID found in clientPrincipal");
@@ -73,11 +126,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = () => {
-    window.location.href = "/login"
+    window.location.href = "/login";
   };
 
   const logout = () => {
-  window.location.href = "/logout"
+    window.location.href = "/logout";
   };
 
   // Check auth on mount

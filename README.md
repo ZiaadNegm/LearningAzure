@@ -20,4 +20,7 @@ This directory is setup with the goal of learning Azure.
 * Find out more about loggin in my host.json
 * Find out why we first see Error for 5 seconds before we see the recent chats.
 * Think about when we insert a record in RecentChats.
+* How do we couple these records in our Database schema?
 * Have we defined a record of a chat?
+* Record the oid of a user in the metadata container in CosmosDB -> Insert when we can't find the oid. What possible issues can this create? 
+    * Truly isn't a user -> will have a no records in the future -> implementing a TTL for these kind of things cna fix this issue.
