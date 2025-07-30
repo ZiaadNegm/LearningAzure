@@ -3,12 +3,10 @@ import {
   HttpResponseInit,
   input,
   InvocationContext,
+  output,
 } from "@azure/functions";
+import { connect } from "http2";
 
-enum queryParameters {
-  USERID = "userid",
-  DOESTHISUSEREXIST = "useridExists",
-}
 export const cosmosInputMetaData = input.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
@@ -21,6 +19,12 @@ export const cosmosInputChats = input.cosmosDB({
   databaseName: "Database-ziaadsChatbot",
   containerName: "cosmos-container-chats",
   partitionKey: "{userid}",
+});
+
+export const cosmosOutputMetaData = output.cosmosDB({
+  connection: "CosmosDBConnection",
+  databaseName: "Database-ziaadsChatbot",
+  containerName: "cosmos-container-chats",
 });
 
 interface metaDataStructure {
@@ -63,8 +67,6 @@ const decideActionPath = (request: HttpRequest) => {
 };
 
 const insertOIDInDB = (request: HttpRequest, context: InvocationContext) => {
-  // TODO: Implement logic to insert new user into both containers
-  // You'll need Cosmos DB output bindings for this
   return {
     status: 501,
     headers: { "Content-Type": "application/json" },
@@ -87,28 +89,12 @@ const checkIfOIDPresentInDB = (
     cosmosInputChats
   ) as containerChats[];
 
-  // Detailed logging for debugging
-  context.log(`[DEBUG] Checking OID: ${oid}`);
-  context.log(`[DEBUG] Action: ${request.params.action}`);
-  context.log(
-    `[DEBUG] MetaData container results: ${JSON.stringify(userFoundInMetaData)}`
-  );
-  context.log(
-    `[DEBUG] Chats container results: ${JSON.stringify(userFoundInChats)}`
-  );
-  context.log(`[DEBUG] MetaData length: ${userFoundInMetaData?.length || 0}`);
-  context.log(`[DEBUG] Chats length: ${userFoundInChats?.length || 0}`);
-
   if (userFoundInChats.length === 0 && userFoundInMetaData.length === 0) {
-    context.log(`[DEBUG] User NOT found in either container for OID: ${oid}`);
     return {
       status: 404,
     };
   }
 
-  context.log(
-    `[DEBUG] User FOUND! MetaData: ${userFoundInMetaData.length}, Chats: ${userFoundInChats.length}`
-  );
   return {
     status: 200,
   };
