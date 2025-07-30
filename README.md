@@ -24,3 +24,4 @@ This directory is setup with the goal of learning Azure.
 * Have we defined a record of a chat?
 * Record the oid of a user in the metadata container in CosmosDB -> Insert when we can't find the oid. What possible issues can this create? 
     * Truly isn't a user -> will have a no records in the future -> implementing a TTL for these kind of things cna fix this issue.
+* Look into toast notifications.

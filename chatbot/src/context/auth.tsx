@@ -35,50 +35,54 @@ const parseAndRetrieveOID = (userMetaDataResponse: any): string => {
 };
 
 const checkIsUserInDB = async (oid: string) => {
-  const userMetaDataUrl = `/api/userMetaData?useridExists=${encodeURIComponent(oid)}`;
+  const userMetaDataUrl = `/api/userMetaData?useridExists=${encodeURIComponent(
+    oid
+  )}`;
   const responseMetaData = await fetch(userMetaDataUrl, {
     method: "GET",
     headers: { Accept: "application/json" },
     credentials: "include",
   });
-  if(responseMetaData.ok){
+  if (responseMetaData.ok) {
     return true;
-  } else{
+  } else {
     return false;
   }
 };
 
-const putUserInDB = async (oid:string) => {
-  const userMetaDataUrl = `/api/userMetaData?useridExists=${encodeURIComponent(oid)}`;
-  const putRequest = fetch(userMetaDataUrl, {
-    method: "POST", 
-    body: JSON.stringify({oid: `${oid}`}),
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include"
-  });
-  try{
-    const putRequestSend = await putRequest;
-    if(!putRequestSend.ok){
-      throw new Error(`Can't put user into db with oid ${oid}`);
-    }
-  } catch(error){
-    console.error('Error when putting in a new user in the DB:', error);
-    throw new Error("Cannot insert user into the DB");
-  }
-}
+//const putUserInDB = async (oid:string) => {
+//const userMetaDataUrl = `/api/userMetaData?useridExists=${encodeURIComponent(oid)}`;
+//const putRequest = fetch(userMetaDataUrl, {
+//method: "POST",
+//body: JSON.stringify({oid: `${oid}`}),
+//headers: {
+//"Content-Type": "application/json",
+//},
+//credentials: "include"
+//});
+//try{
+//const putRequestSend = await putRequest;
+//if(!putRequestSend.ok){
+//throw new Error(`Can't put user into db with oid ${oid}`);
+//}
+//} catch(error){
+//console.error('Error when putting in a new user in the DB:', error);
+//throw new Error("Cannot insert user into the DB");
+//}
+//}
 
 const OIDinDatabase = async (oid: string) => {
   const isUserInDB: boolean = await checkIsUserInDB(oid);
   if (!isUserInDB) {
-    try{
+    try {
       console.log("User HAS NOT BEEN FOUND IN THE DATABASE");
- //     await putUserInDB(oid);
-    } catch(error) {
-      throw new Error(`Having issues inserting user into the DB with the oid ${oid}`);
+      //     await putUserInDB(oid);
+    } catch (error) {
+      throw new Error(
+        `Having issues inserting user into the DB with the oid ${oid}`
+      );
     }
-  } else{
+  } else {
     console.log("USER HAS BEEN FOUND IN THE DATBASE WITH OID", oid);
   }
 };
