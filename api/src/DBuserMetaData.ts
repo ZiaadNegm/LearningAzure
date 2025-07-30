@@ -79,6 +79,7 @@ const insertOIDInDB = async (
 ) => {
   try {
     const userData = await request.json();
+    context.log(`[DEBUG] received request.json`);
 
     // Validate that oid exists in the request body
     if (
@@ -87,6 +88,9 @@ const insertOIDInDB = async (
       !("oid" in userData) ||
       typeof userData.oid !== "string"
     ) {
+      context.log(
+        `[DEBUG] OID doesn't exist in the body or the type isn't the request`
+      );
       return {
         status: 400,
         headers: { "Content-Type": "application/json" },
@@ -107,6 +111,7 @@ const insertOIDInDB = async (
       messages: [],
     };
 
+    context.log(`[DEBUG] Outputs are set with the document and the document`);
     context.extraOutputs.set(cosmosOutputMetaData, metaDataDocument);
     context.extraOutputs.set(cosmosOutputChats, chatDocument);
 

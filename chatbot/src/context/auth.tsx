@@ -57,6 +57,7 @@ const checkIsUserInDB = async (oid: string) => {
 
 const putUserInDB = async (oid: string) => {
   const userMetaDataUrl = `/api/userMetaData/exists/${encodeURIComponent(oid)}`;
+  console.log("POST request to put OID into databse has been made");
   const putRequest = fetch(userMetaDataUrl, {
     method: "POST",
     body: JSON.stringify({ oid: `${oid}` }),
