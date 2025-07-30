@@ -11,6 +11,7 @@ import { ChatFunction } from "./ChatFunction";
 app.http("userMetaData", {
   methods: ["GET", "POST"],
   authLevel: "anonymous",
+  route: "userMetaData/{action}/{userid}",
   extraInputs: [
     cosmosInputMetaData,
     cosmosInputChats,

@@ -52,9 +52,12 @@ interface containerChats {
 }
 
 const decideActionPath = (request: HttpRequest) => {
-  if (request.query.has(queryParameters.USERID)) {
+  const action = request.params.action;
+  const userid = request.params.userid;
+
+  if (action === "fetch" && userid) {
     return fetchUserRecentsInformation;
-  } else if (request.query.has(queryParameters.DOESTHISUSEREXIST)) {
+  } else if (action === "exists" && userid) {
     if (request.method === "GET") {
       return checkIfOIDPresentInDB;
     } else if (request.method === "POST") {
@@ -66,7 +69,11 @@ const decideActionPath = (request: HttpRequest) => {
   return (request: HttpRequest, context: InvocationContext) => ({
     status: 400,
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ error: "Invalid request parameters or method" }),
+    body: JSON.stringify({
+      error: "Invalid request parameters or method",
+      expectedFormat:
+        "/api/userMetaData/{action}/{userid} where action is 'fetch' or 'exists'",
+    }),
   });
 };
 
@@ -84,7 +91,10 @@ const checkIfOIDPresentInDB = (
   request: HttpRequest,
   context: InvocationContext
 ) => {
-  const oid = request.query.get("useridExists");
+  // Get OID from route parameter (for the existence check)
+  const oid = request.params.userid;
+
+  // Use the bindings that query by userid (which contains the OID for existence checks)
   const userFoundInMetaData = context.extraInputs.get(
     cosmosInputMetaCheckUserID
   ) as metaDataStructure[];
@@ -94,6 +104,7 @@ const checkIfOIDPresentInDB = (
 
   // Detailed logging for debugging
   context.log(`[DEBUG] Checking OID: ${oid}`);
+  context.log(`[DEBUG] Action: ${request.params.action}`);
   context.log(
     `[DEBUG] MetaData container results: ${JSON.stringify(userFoundInMetaData)}`
   );
@@ -126,7 +137,8 @@ const fetchUserRecentsInformation = (
     cosmosInputMetaData
   ) as metaDataStructure[];
 
-  const userid = request.query.get("userid");
+  // Get userid from route parameter first, then query parameter
+  const userid = request.params.userid || request.query.get("userid");
 
   if (!items || items.length === 0) {
     return {

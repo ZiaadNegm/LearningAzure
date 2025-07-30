@@ -1,6 +1,6 @@
 import type { GETUserData } from "../../types/chat";
 const fetchRawResponse = async (oid: string) => {
-  const url = `/api/userMetaData?userid=${encodeURIComponent(oid)}`;
+  const url = `/api/userMetaData/fetch/${encodeURIComponent(oid)}`;
   return fetch(url, {
     method: "GET",
     headers: { Accept: "application/json" },

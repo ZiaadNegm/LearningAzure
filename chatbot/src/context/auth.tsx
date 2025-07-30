@@ -36,9 +36,8 @@ const parseAndRetrieveOID = (userMetaDataResponse: any): string => {
 
 const checkIsUserInDB = async (oid: string) => {
   console.log(`[DEBUG] Checking if user exists in DB with OID: ${oid}`);
-  const userMetaDataUrl = `/api/userMetaData?useridExists=${encodeURIComponent(
-    oid
-  )}`;
+  // Use route parameter for existence check: /api/userMetaData/exists/{oid}
+  const userMetaDataUrl = `/api/userMetaData/exists/${encodeURIComponent(oid)}`;
   console.log(`[DEBUG] Request URL: ${userMetaDataUrl}`);
   
   const responseMetaData = await fetch(userMetaDataUrl, {
@@ -57,7 +56,7 @@ const checkIsUserInDB = async (oid: string) => {
 };
 
 //const putUserInDB = async (oid:string) => {
-//const userMetaDataUrl = `/api/userMetaData?useridExists=${encodeURIComponent(oid)}`;
+//const userMetaDataUrl = `/api/userMetaData/exists/${encodeURIComponent(oid)}`;
 //const putRequest = fetch(userMetaDataUrl, {
 //method: "POST",
 //body: JSON.stringify({oid: `${oid}`}),
