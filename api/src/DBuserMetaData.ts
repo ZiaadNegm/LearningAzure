@@ -14,28 +14,28 @@ export const cosmosInputChatCheckUserID = input.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
   containerName: "cosmos-container-chats",
-  partitionKey: "{Query.useridExists}",
+  sqlQuery: "SELECT * FROM c WHERE c.userid = {useridExists}",
 });
 
 export const cosmosInputMetaCheckUserID = input.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
   containerName: "cosmos-container-user-meta-data",
-  partitionKey: "{Query.useridExists}",
+  sqlQuery: "SELECT * FROM c WHERE c.userid = {useridExists}",
 });
 
 export const cosmosInputMetaData = input.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
   containerName: "cosmos-container-user-meta-data",
-  partitionKey: "{Query.userid}",
+  sqlQuery: "SELECT * FROM c WHERE c.userid = {userid}",
 });
 
 export const cosmosInputChats = input.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
   containerName: "cosmos-container-chats",
-  partitionKey: "{Query.userid}",
+  sqlQuery: "SELECT * FROM c WHERE c.userid = {userid}",
 });
 
 interface metaDataStructure {
