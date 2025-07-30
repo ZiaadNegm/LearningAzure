@@ -6,7 +6,7 @@ import {
   InvocationContext,
   output,
 } from "@azure/functions";
-import { connect } from "http2";
+import { Metadata } from "openai/resources/shared";
 
 export const cosmosInputMetaData = input.cosmosDB({
   connection: "CosmosDBConnection",
@@ -94,19 +94,21 @@ const insertOIDInDB = async (
       };
     }
 
-    const metaDataDocument = {
+    const metaDataDocument: metaDataStructure = {
       id: randomUUID(),
       userid: userData.oid,
       metadata: [],
     };
 
-    const chatDocument = {
+    const chatDocument: containerChats = {
       id: randomUUID(),
       userid: userData.oid,
+      title: "",
+      messages: [],
     };
 
     context.extraOutputs.set(cosmosOutputMetaData, metaDataDocument);
-    context.extraOutputs.set(cosmosOutputMetaData, chatDocument);
+    context.extraOutputs.set(cosmosOutputChats, chatDocument);
 
     return {
       status: 201,
