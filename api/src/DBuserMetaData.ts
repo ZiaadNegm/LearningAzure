@@ -14,14 +14,16 @@ export const cosmosInputChatCheckUserID = input.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
   containerName: "cosmos-container-chats",
-  sqlQuery: "SELECT * FROM c WHERE c.userid = {useridExists}",
+  id: "1",
+  partitionKey: "{userid}",
 });
 
 export const cosmosInputMetaCheckUserID = input.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
   containerName: "cosmos-container-user-meta-data",
-  sqlQuery: "SELECT * FROM c WHERE c.userid = {useridExists}",
+  id: "1",
+  partitionKey: "{userid}",
 });
 
 export const cosmosInputMetaData = input.cosmosDB({
