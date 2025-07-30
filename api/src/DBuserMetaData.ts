@@ -86,17 +86,35 @@ const checkIfOIDPresentInDB = (
   request: HttpRequest,
   context: InvocationContext
 ) => {
+  const oid = request.query.get("useridExists");
   const userFoundInMetaData = context.extraInputs.get(
     cosmosInputMetaCheckUserID
   ) as metaDataStructure[];
   const userFoundInChats = context.extraInputs.get(
     cosmosInputChatCheckUserID
   ) as containerChats[];
+
+  // Detailed logging for debugging
+  context.log(`[DEBUG] Checking OID: ${oid}`);
+  context.log(
+    `[DEBUG] MetaData container results: ${JSON.stringify(userFoundInMetaData)}`
+  );
+  context.log(
+    `[DEBUG] Chats container results: ${JSON.stringify(userFoundInChats)}`
+  );
+  context.log(`[DEBUG] MetaData length: ${userFoundInMetaData?.length || 0}`);
+  context.log(`[DEBUG] Chats length: ${userFoundInChats?.length || 0}`);
+
   if (userFoundInChats.length === 0 && userFoundInMetaData.length === 0) {
+    context.log(`[DEBUG] User NOT found in either container for OID: ${oid}`);
     return {
       status: 404,
     };
   }
+
+  context.log(
+    `[DEBUG] User FOUND! MetaData: ${userFoundInMetaData.length}, Chats: ${userFoundInChats.length}`
+  );
   return {
     status: 200,
   };

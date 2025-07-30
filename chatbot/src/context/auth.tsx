@@ -35,14 +35,20 @@ const parseAndRetrieveOID = (userMetaDataResponse: any): string => {
 };
 
 const checkIsUserInDB = async (oid: string) => {
+  console.log(`[DEBUG] Checking if user exists in DB with OID: ${oid}`);
   const userMetaDataUrl = `/api/userMetaData?useridExists=${encodeURIComponent(
     oid
   )}`;
+  console.log(`[DEBUG] Request URL: ${userMetaDataUrl}`);
+  
   const responseMetaData = await fetch(userMetaDataUrl, {
     method: "GET",
     headers: { Accept: "application/json" },
     credentials: "include",
   });
+  
+  console.log(`[DEBUG] Response status: ${responseMetaData.status}`);
+  
   if (responseMetaData.ok) {
     return true;
   } else {
