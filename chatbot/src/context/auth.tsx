@@ -73,10 +73,13 @@ const OIDinDatabase = async (oid: string) => {
   const isUserInDB: boolean = await checkIsUserInDB(oid);
   if (!isUserInDB) {
     try{
-      await putUserInDB(oid);
+      console.log("User HAS NOT BEEN FOUND IN THE DATABASE");
+ //     await putUserInDB(oid);
     } catch(error) {
       throw new Error(`Having issues inserting user into the DB with the oid ${oid}`);
     }
+  } else{
+    console.log("USER HAS BEEN FOUND IN THE DATBASE WITH OID", oid);
   }
 };
 
