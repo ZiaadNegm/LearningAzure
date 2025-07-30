@@ -6,7 +6,6 @@ import {
   InvocationContext,
   output,
 } from "@azure/functions";
-import { Metadata } from "openai/resources/shared";
 
 export const cosmosInputMetaData = input.cosmosDB({
   connection: "CosmosDBConnection",

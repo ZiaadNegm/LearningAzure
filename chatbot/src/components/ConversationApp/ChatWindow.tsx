@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TextInput } from "../ChatInput";
 import { RecentChats } from "./RecentChats";
+import { NewChatButton } from "../NewChatButton";
 export interface ConversationEntry {
   prompt: string;
   response?: string;
@@ -50,12 +51,19 @@ export const ChatWindow = () => {
     addEntryToConversation(promptText, response, setConversation);
   };
 
+  const handleNewChat = () => {
+    setConversation([]);
+    setCurrentInput("");
+    console.log("Starting new chat - conversation cleared");
+  };
+
   return (
     <div className="h-screen flex">
       <div className="w-1/6 min-w-80 border-r border-gray-200 bg-gray-50">
         <div className="p-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-800">Recent Chats</h2>
         </div>
+        <NewChatButton onNewChat={handleNewChat} />
         <RecentChats />
       </div>
 
