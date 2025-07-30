@@ -3,6 +3,7 @@ import {
   cosmosInputMetaData,
   cosmosInputChats,
   cosmosOutputMetaData,
+  cosmosOutputChats,
 } from "./DBuserMetaData";
 import { userMetaData } from "./DBuserMetaData";
 import { ChatFunction } from "./ChatFunction";
@@ -12,7 +13,8 @@ app.http("userMetaData", {
   methods: ["GET", "POST"],
   authLevel: "anonymous",
   route: "userMetaData/{action}/{userid}",
-  extraInputs: [cosmosInputMetaData, cosmosInputChats, cosmosOutputMetaData],
+  extraInputs: [cosmosInputMetaData, cosmosInputChats],
+  extraOutputs: [cosmosOutputMetaData, cosmosOutputChats],
   handler: userMetaData,
 });
 
