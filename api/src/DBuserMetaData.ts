@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import {
   HttpRequest,
   HttpResponseInit,
@@ -21,10 +22,16 @@ export const cosmosInputChats = input.cosmosDB({
   partitionKey: "{userid}",
 });
 
-export const cosmosOutputMetaData = output.cosmosDB({
+export const cosmosOutputChats = output.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
   containerName: "cosmos-container-chats",
+});
+
+export const cosmosOutputMetaData = output.cosmosDB({
+  connection: "CosmosDBConnection",
+  databaseName: "Database-ziaadsChatbot",
+  containerName: "cosmos-container-user-meta-data",
 });
 
 interface metaDataStructure {
@@ -66,12 +73,57 @@ const decideActionPath = (request: HttpRequest) => {
   });
 };
 
-const insertOIDInDB = (request: HttpRequest, context: InvocationContext) => {
-  return {
-    status: 501,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ error: "Insert operation not yet implemented" }),
-  };
+const insertOIDInDB = async (
+  request: HttpRequest,
+  context: InvocationContext
+) => {
+  try {
+    const userData = await request.json();
+
+    // Validate that oid exists in the request body
+    if (
+      !userData ||
+      typeof userData !== "object" ||
+      !("oid" in userData) ||
+      typeof userData.oid !== "string"
+    ) {
+      return {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ error: "Missing or invalid oid in request" }),
+      };
+    }
+
+    const metaDataDocument = {
+      id: randomUUID(),
+      userid: userData.oid,
+      metadata: [],
+    };
+
+    const chatDocument = {
+      id: randomUUID(),
+      userid: userData.oid,
+    };
+
+    context.extraOutputs.set(cosmosOutputMetaData, metaDataDocument);
+    context.extraOutputs.set(cosmosOutputMetaData, chatDocument);
+
+    return {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: "User added successfully",
+        userid: userData.oid,
+      }),
+    };
+  } catch (error) {
+    context.error("Error in insertOIDInDB:", error);
+    return {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ error: "Internal server error" }),
+    };
+  }
 };
 
 const checkIfOIDPresentInDB = (
