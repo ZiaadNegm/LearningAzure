@@ -1,10 +1,5 @@
 import { app } from "@azure/functions";
-import {
-  cosmosInputMetaData,
-  cosmosInputChats,
-  cosmosInputChatCheckUserID,
-  cosmosInputMetaCheckUserID,
-} from "./DBuserMetaData";
+import { cosmosInputMetaData, cosmosInputChats } from "./DBuserMetaData";
 import { userMetaData } from "./DBuserMetaData";
 import { ChatFunction } from "./ChatFunction";
 
@@ -12,12 +7,7 @@ app.http("userMetaData", {
   methods: ["GET", "POST"],
   authLevel: "anonymous",
   route: "userMetaData/{action}/{userid}",
-  extraInputs: [
-    cosmosInputMetaData,
-    cosmosInputChats,
-    cosmosInputMetaCheckUserID,
-    cosmosInputChatCheckUserID,
-  ],
+  extraInputs: [cosmosInputMetaData, cosmosInputChats],
   handler: userMetaData,
 });
 

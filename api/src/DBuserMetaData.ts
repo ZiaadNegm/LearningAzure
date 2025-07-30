@@ -9,23 +9,6 @@ enum queryParameters {
   USERID = "userid",
   DOESTHISUSEREXIST = "useridExists",
 }
-
-export const cosmosInputChatCheckUserID = input.cosmosDB({
-  connection: "CosmosDBConnection",
-  databaseName: "Database-ziaadsChatbot",
-  containerName: "cosmos-container-chats",
-  id: "1",
-  partitionKey: "{userid}",
-});
-
-export const cosmosInputMetaCheckUserID = input.cosmosDB({
-  connection: "CosmosDBConnection",
-  databaseName: "Database-ziaadsChatbot",
-  containerName: "cosmos-container-user-meta-data",
-  id: "1",
-  partitionKey: "{userid}",
-});
-
 export const cosmosInputMetaData = input.cosmosDB({
   connection: "CosmosDBConnection",
   databaseName: "Database-ziaadsChatbot",
@@ -98,10 +81,10 @@ const checkIfOIDPresentInDB = (
 
   // Use the bindings that query by userid (which contains the OID for existence checks)
   const userFoundInMetaData = context.extraInputs.get(
-    cosmosInputMetaCheckUserID
+    cosmosInputMetaData
   ) as metaDataStructure[];
   const userFoundInChats = context.extraInputs.get(
-    cosmosInputChatCheckUserID
+    cosmosInputChats
   ) as containerChats[];
 
   // Detailed logging for debugging
