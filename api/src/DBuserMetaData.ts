@@ -4,8 +4,6 @@ import {
   input,
   InvocationContext,
 } from "@azure/functions";
-import { Metadata } from "openai/resources/shared";
-import { getHeapCodeStatistics } from "v8";
 
 enum queryParameters {
   USERID = "userid",
